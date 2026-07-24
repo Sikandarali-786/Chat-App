@@ -3,6 +3,9 @@ import cors from "cors";
 import helmet from "helmet";
 import compression from "compression";
 import cookieParser from "cookie-parser";
+import { notFoundMiddleware } from "./shared/middlewares/notFound.middleware";
+import { errorMiddleware } from "./shared/middlewares/error.middleware";
+import routes from "./routes";
 
 const app = express();
 
@@ -24,16 +27,14 @@ app.use(express.urlencoded({ extended: true }));
 // Cookies
 app.use(cookieParser());
 
+app.use("/api/v1", routes);
+
 // Compression
 app.use(compression());
-
-// Health Check Route
-app.get("/api/v1/health", (_req, res) => {
-    res.status(200).json({
-        success: true,
-        message: "Server is running 🚀",
-        timestamp: new Date().toISOString(),
-    });
-});
+// Middleware 
+// 404 Middleware
+app.use(notFoundMiddleware);
+// Error Middleware
+app.use(errorMiddleware);
 
 export default app;
