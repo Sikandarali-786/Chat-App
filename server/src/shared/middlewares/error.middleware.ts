@@ -1,5 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import { AppError } from "../errors/AppError";
+import { logger } from "../logger/logger";
+import { MESSAGES } from "../constants";
+import { ZodError } from "zod";
 
 export const errorMiddleware = (
     error: Error,
@@ -7,15 +10,20 @@ export const errorMiddleware = (
     res: Response,
     _next: NextFunction
 ) => {
-    if (error instanceof AppError) {
-        return res.status(error.statusCode).json({
+    logger.error(error)
+    if (error instanceof ZodError) {
+        return res.status(400).json({
             success: false,
-            message: error.message,
+            message: "Validation failed",
+            errors: error.issues.map((issue) => ({
+                field: issue.path.join("."),
+                message: issue.message,
+            })),
         });
     }
 
     return res.status(500).json({
         success: false,
-        message: "Internal Server Error",
+        message: MESSAGES.INTERNAL_SERVER_ERROR
     });
 };

@@ -1,4 +1,4 @@
-import { cleanEnv, port, str } from "envalid";
+import { cleanEnv, port, str, num } from "envalid";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -16,4 +16,5 @@ export const env = cleanEnv(process.env, {
     ACCESS_TOKEN_EXPIRES_IN: str(),
     REFRESH_TOKEN_EXPIRES_IN: str(),
     CLIENT_URL: str(),
+    BCRYPT_SALT_ROUNDS: num(),
 });

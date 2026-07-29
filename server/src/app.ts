@@ -6,6 +6,7 @@ import cookieParser from "cookie-parser";
 import { notFoundMiddleware } from "./shared/middlewares/notFound.middleware";
 import { errorMiddleware } from "./shared/middlewares/error.middleware";
 import routes from "./routes";
+import { authRoutes } from "./modules/auth";
 
 const app = express();
 
@@ -28,6 +29,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 app.use("/api/v1", routes);
+app.use("/api/v1/auth", authRoutes);
 
 // Compression
 app.use(compression());
