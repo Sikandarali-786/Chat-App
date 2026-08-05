@@ -18,10 +18,21 @@ class UserRepository {
         return await User.findOne({ username });
     }
 
-    async updateRefreshToken(
-        userId: string,
-        refreshToken: string | null
-    ) {
+    async findByVerificationToken(token: string) {
+        return await User.findOne({
+            verificationToken: token,
+            verificationTokenExpiresAt: { $gt: new Date() },
+        });
+    }
+
+    async findByPasswordResetToken(token: string) {
+        return await User.findOne({
+            passwordResetToken: token,
+            passwordResetExpiresAt: { $gt: new Date() },
+        });
+    }
+
+    async updateRefreshToken(userId: string, refreshToken: string | null) {
         return await User.findByIdAndUpdate(
             userId,
             { refreshToken },
@@ -29,10 +40,61 @@ class UserRepository {
         );
     }
 
-    async updateStatus(
+    async verifyEmail(userId: string) {
+        return await User.findByIdAndUpdate(
+            userId,
+            {
+                isVerified: true,
+                verificationToken: null,
+                verificationTokenExpiresAt: null,
+            },
+            { new: true }
+        );
+    }
+
+    async setVerificationToken(
         userId: string,
-        status: "online" | "offline" | "away"
+        token: string,
+        expiresAt: Date
     ) {
+        return await User.findByIdAndUpdate(
+            userId,
+            {
+                verificationToken: token,
+                verificationTokenExpiresAt: expiresAt,
+            },
+            { new: true }
+        );
+    }
+
+    async setPasswordResetToken(
+        userId: string,
+        token: string,
+        expiresAt: Date
+    ) {
+        return await User.findByIdAndUpdate(
+            userId,
+            {
+                passwordResetToken: token,
+                passwordResetExpiresAt: expiresAt,
+            },
+            { new: true }
+        );
+    }
+
+    async resetPassword(userId: string, hashedPassword: string) {
+        return await User.findByIdAndUpdate(
+            userId,
+            {
+                password: hashedPassword,
+                passwordResetToken: null,
+                passwordResetExpiresAt: null,
+            },
+            { new: true }
+        );
+    }
+
+    async updateStatus(userId: string, status: "online" | "offline" | "away") {
         return await User.findByIdAndUpdate(
             userId,
             {
@@ -43,15 +105,8 @@ class UserRepository {
         );
     }
 
-    async updateProfile(
-        userId: string,
-        data: Partial<IUser>
-    ) {
-        return await User.findByIdAndUpdate(
-            userId,
-            data,
-            { new: true }
-        );
+    async updateProfile(userId: string, data: Partial<IUser>) {
+        return await User.findByIdAndUpdate(userId, data, { new: true });
     }
 }
 

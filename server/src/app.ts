@@ -5,8 +5,9 @@ import compression from "compression";
 import cookieParser from "cookie-parser";
 import { notFoundMiddleware } from "./shared/middlewares/notFound.middleware";
 import { errorMiddleware } from "./shared/middlewares/error.middleware";
+import { requestLogger } from "./shared/middlewares/requestLogger.middleware";
+import { env } from "./shared/config/env";
 import routes from "./routes";
-import { authRoutes } from "./modules/auth";
 
 const app = express();
 
@@ -16,10 +17,13 @@ app.use(helmet());
 // CORS
 app.use(
     cors({
-        origin: true,
+        origin: env.CLIENT_URL,
         credentials: true,
     })
 );
+
+// Request Logger
+app.use(requestLogger);
 
 // Body Parser
 app.use(express.json());
@@ -28,15 +32,16 @@ app.use(express.urlencoded({ extended: true }));
 // Cookies
 app.use(cookieParser());
 
-app.use("/api/v1", routes);
-app.use("/api/v1/auth", authRoutes);
-
 // Compression
 app.use(compression());
-// Middleware 
-// 404 Middleware
+
+// Routes
+app.use(env.API_PREFIX, routes);
+
+// 404 Handler
 app.use(notFoundMiddleware);
-// Error Middleware
+
+// Global Error Handler
 app.use(errorMiddleware);
 
 export default app;
