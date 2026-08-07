@@ -15,7 +15,7 @@ export interface IUser extends Document {
 
     isVerified: boolean;
     status: UserStatus;
-    lastSeen?: Date;
+    lastSeen?: Date | null;
 
     refreshToken?: string | null;
 
@@ -25,6 +25,21 @@ export interface IUser extends Document {
     passwordResetToken?: string | null;
     passwordResetExpiresAt?: Date | null;
 
+    blockedUsers: Types.ObjectId[];
+    mutedUsers: Types.ObjectId[];
+
     createdAt: Date;
     updatedAt: Date;
+}
+
+// ─── DTOs ─────────────────────────────────────────────────────────────────────
+
+export interface SearchUsersQuery {
+    q: string;
+    page?: number;
+    limit?: number;
+}
+
+export interface UpdateStatusDTO {
+    status: UserStatus;
 }

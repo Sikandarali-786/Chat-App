@@ -15,6 +15,23 @@ export const MESSAGES = {
     PROFILE_UPDATED: "Profile updated successfully",
     AVATAR_UPDATED: "Avatar updated successfully",
 
+    // Users
+    USERS_FETCHED: "Users fetched successfully",
+    USER_FETCHED: "User fetched successfully",
+    STATUS_UPDATED: "Status updated successfully",
+    USER_BLOCKED: "User blocked successfully",
+    USER_UNBLOCKED: "User unblocked successfully",
+    USER_MUTED: "User muted successfully",
+    USER_UNMUTED: "User unmuted successfully",
+    BLOCKED_USERS_FETCHED: "Blocked users fetched successfully",
+    MUTED_USERS_FETCHED: "Muted users fetched successfully",
+    CANNOT_BLOCK_SELF: "You cannot block yourself",
+    CANNOT_MUTE_SELF: "You cannot mute yourself",
+    USER_ALREADY_BLOCKED: "User is already blocked",
+    USER_NOT_BLOCKED: "User is not blocked",
+    USER_ALREADY_MUTED: "User is already muted",
+    USER_NOT_MUTED: "User is not muted",
+
     // Errors
     EMAIL_ALREADY_EXISTS: "Email already exists",
     USERNAME_ALREADY_EXISTS: "Username already exists",

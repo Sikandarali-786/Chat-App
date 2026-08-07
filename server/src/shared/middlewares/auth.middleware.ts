@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from "express";
 import { verifyAccessToken } from "../config/jwt";
-import { userRepository } from "../../modules/users";
 import { AppError } from "../errors/AppError";
 import { MESSAGES } from "../constants";
 
@@ -44,13 +43,16 @@ export const protect = async (
             throw new AppError(MESSAGES.INVALID_TOKEN, 401);
         }
 
-        // 3. Check user still exists
+        // 3. Lazy import to avoid circular dependency
+        const { userRepository } = await import("../../modules/users/user.repository.js");
+
+        // 4. Check user still exists
         const user = await userRepository.findById(payload.userId);
         if (!user) {
             throw new AppError(MESSAGES.UNAUTHORIZED, 401);
         }
 
-        // 4. Attach to request
+        // 5. Attach to request
         req.user = { userId: payload.userId, email: payload.email };
 
         next();

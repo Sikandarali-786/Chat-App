@@ -81,10 +81,25 @@ const userSchema = new Schema<IUser>(
             type: Date,
             default: null,
         },
+
+        blockedUsers: {
+            type: [Schema.Types.ObjectId],
+            ref: "User",
+            default: [],
+        },
+
+        mutedUsers: {
+            type: [Schema.Types.ObjectId],
+            ref: "User",
+            default: [],
+        },
     },
     {
         timestamps: true,
     }
 );
+
+// Index for search
+userSchema.index({ fullName: "text", username: "text" });
 
 export const User = model<IUser>("User", userSchema);
