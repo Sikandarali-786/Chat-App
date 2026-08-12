@@ -101,6 +101,30 @@ class MessageService {
             }
         });
 
+        // Create notification for mentions
+        if (data.mentions && data.mentions.length > 0) {
+            const { notificationService } = await import(
+                "../notifications/notification.service.js"
+            );
+            const { userRepository } = await import("../users/user.repository.js");
+
+            const sender = await userRepository.findById(userId);
+
+            for (const mentionedUserId of data.mentions) {
+                if (mentionedUserId !== userId) {
+                    await notificationService.createAndEmit({
+                        userId: mentionedUserId as any,
+                        type: "mention",
+                        title: "You were mentioned",
+                        body: `${sender?.fullName} mentioned you in a message`,
+                        senderId: userId as any,
+                        conversationId: data.conversationId as any,
+                        messageId: message._id,
+                    });
+                }
+            }
+        }
+
         return populatedMessage;
     }
 

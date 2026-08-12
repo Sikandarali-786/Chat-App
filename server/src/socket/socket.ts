@@ -117,6 +117,109 @@ export const initSocket = (httpServer: HttpServer): SocketServer => {
             socket.emit("users:online", { onlineUsers: onlineUserIds });
         });
 
+        // ─── Call Invitation ────────────────────────────────────────────────────
+
+        socket.on(
+            "call:invite",
+            async (data: {
+                receiverId: string;
+                callId: string;
+                callType: "audio" | "video";
+                conversationId: string;
+            }) => {
+                // Emit to receiver
+                emitToUser(data.receiverId, "call:invitation", {
+                    callId: data.callId,
+                    callType: data.callType,
+                    senderId: userId,
+                    conversationId: data.conversationId,
+                });
+
+                // Create notification
+                const { notificationService } = await import(
+                    "../modules/notifications/notification.service.js"
+                );
+                const { userRepository } = await import(
+                    "../modules/users/user.repository.js"
+                );
+
+                const sender = await userRepository.findById(userId);
+                if (sender) {
+                    await notificationService.createAndEmit({
+                        userId: data.receiverId as any,
+                        type: "call_invitation",
+                        title: `${data.callType === "video" ? "Video" : "Audio"} Call`,
+                        body: `${sender.fullName} is calling you`,
+                        senderId: userId as any,
+                        conversationId: data.conversationId as any,
+                        callId: data.callId,
+                        callType: data.callType,
+                    });
+                }
+            }
+        );
+
+        socket.on(
+            "call:accept",
+            (data: { callId: string; receiverId: string }) => {
+                emitToUser(data.receiverId, "call:accepted", {
+                    callId: data.callId,
+                    userId,
+                });
+            }
+        );
+
+        socket.on(
+            "call:reject",
+            (data: { callId: string; receiverId: string }) => {
+                emitToUser(data.receiverId, "call:rejected", {
+                    callId: data.callId,
+                    userId,
+                });
+            }
+        );
+
+        socket.on("call:end", (data: { callId: string; receiverId: string }) => {
+            emitToUser(data.receiverId, "call:ended", {
+                callId: data.callId,
+                userId,
+            });
+        });
+
+        // WebRTC signaling
+        socket.on(
+            "call:offer",
+            (data: { receiverId: string; offer: any; callId: string }) => {
+                emitToUser(data.receiverId, "call:offer", {
+                    offer: data.offer,
+                    callId: data.callId,
+                    senderId: userId,
+                });
+            }
+        );
+
+        socket.on(
+            "call:answer",
+            (data: { receiverId: string; answer: any; callId: string }) => {
+                emitToUser(data.receiverId, "call:answer", {
+                    answer: data.answer,
+                    callId: data.callId,
+                    senderId: userId,
+                });
+            }
+        );
+
+        socket.on(
+            "call:ice-candidate",
+            (data: { receiverId: string; candidate: any; callId: string }) => {
+                emitToUser(data.receiverId, "call:ice-candidate", {
+                    candidate: data.candidate,
+                    callId: data.callId,
+                    senderId: userId,
+                });
+            }
+        );
+
         // ─── Disconnect ─────────────────────────────────────────────────────────
 
         socket.on("disconnect", async () => {
