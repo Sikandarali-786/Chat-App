@@ -20,7 +20,7 @@ export const register = async (payload: RegisterPayload) => {
 
 // ─── Verify Email ─────────────────────────────────────────────────────────────
 export const verifyEmail = async (token: string) => {
-  const { data } = await api.post<ApiResponse>('/auth/verify-email', { token })
+  const { data } = await api.get<ApiResponse>(`/auth/verify-email/${token}`)
   return data
 }
 

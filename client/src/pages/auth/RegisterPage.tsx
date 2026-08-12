@@ -10,98 +10,116 @@ import { Button } from '@/components/ui/Button'
 import { useRegister } from '@/modules/auth/auth.hooks'
 
 const schema = z.object({
-  fullName: z.string().min(2, 'Full name must be at least 2 characters'),
+  fullName: z.string().min(2, 'At least 2 characters required'),
   username: z
     .string()
-    .min(3, 'Username must be at least 3 characters')
-    .regex(/^[a-z0-9_]+$/, 'Only lowercase letters, numbers, underscores'),
+    .min(3, 'At least 3 characters required')
+    .regex(/^[a-z0-9_]+$/, 'Lowercase letters, numbers & underscores only'),
   email: z.string().email('Enter a valid email'),
   password: z
     .string()
-    .min(8, 'Password must be at least 8 characters')
-    .regex(/[A-Z]/, 'Must include an uppercase letter')
-    .regex(/[0-9]/, 'Must include a number'),
+    .min(8, 'At least 8 characters required')
+    .regex(/[A-Z]/, 'Include an uppercase letter')
+    .regex(/[0-9]/, 'Include a number'),
 })
 
 type FormData = z.infer<typeof schema>
 
 export function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false)
-  const { mutate: register, isPending } = useRegister()
+  const { mutate: registerUser, isPending } = useRegister()
 
   const {
-    register: formRegister,
+    register,
     handleSubmit,
     formState: { errors },
   } = useForm<FormData>({ resolver: zodResolver(schema) })
 
-  const onSubmit = (data: FormData) => register(data)
+  const onSubmit = (data: FormData) => registerUser(data)
 
   return (
     <AuthLayout
-      title="Create account"
-      subtitle="Join ChatApp and start connecting"
+      title="Create account ✨"
+      subtitle="Join ChatApp and start connecting today"
     >
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-        <Input
-          label="Full Name"
-          type="text"
-          placeholder="Muhammad Sikandar"
-          leftIcon={<User size={16} />}
-          error={errors.fullName?.message}
-          {...formRegister('fullName')}
-        />
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <div className="grid grid-cols-2 gap-3">
+          <Input
+            label="Full Name"
+            type="text"
+            placeholder="John Doe"
+            autoComplete="name"
+            leftIcon={<User size={15} />}
+            error={errors.fullName?.message}
+            {...register('fullName')}
+          />
+          <Input
+            label="Username"
+            type="text"
+            placeholder="john_doe"
+            autoComplete="username"
+            leftIcon={<AtSign size={15} />}
+            error={errors.username?.message}
+            {...register('username')}
+          />
+        </div>
 
         <Input
-          label="Username"
-          type="text"
-          placeholder="muhammad_sikandar"
-          leftIcon={<AtSign size={16} />}
-          error={errors.username?.message}
-          {...formRegister('username')}
-        />
-
-        <Input
-          label="Email"
+          label="Email address"
           type="email"
           placeholder="you@example.com"
-          leftIcon={<Mail size={16} />}
+          autoComplete="email"
+          leftIcon={<Mail size={15} />}
           error={errors.email?.message}
-          {...formRegister('email')}
+          {...register('email')}
         />
 
         <Input
           label="Password"
           type={showPassword ? 'text' : 'password'}
           placeholder="Min. 8 characters"
-          leftIcon={<Lock size={16} />}
+          autoComplete="new-password"
+          leftIcon={<Lock size={15} />}
+          hint="Must include uppercase letter and number"
           rightIcon={
             <button
               type="button"
               onClick={() => setShowPassword((v) => !v)}
-              className="cursor-pointer"
+              className="cursor-pointer hover:text-slate-700 transition-colors"
               aria-label={showPassword ? 'Hide password' : 'Show password'}
             >
-              {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+              {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
             </button>
           }
           error={errors.password?.message}
-          {...formRegister('password')}
+          {...register('password')}
         />
 
-        <Button type="submit" loading={isPending} className="w-full mt-1">
-          Create account
+        <Button
+          type="submit"
+          loading={isPending}
+          className="w-full"
+          size="lg"
+        >
+          {!isPending && 'Create account'}
         </Button>
 
-        <p className="text-center text-sm text-gray-500">
-          Already have an account?{' '}
-          <Link
-            to="/login"
-            className="text-violet-600 font-medium hover:underline"
-          >
-            Sign in
-          </Link>
-        </p>
+        <div className="relative my-1">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-slate-100" />
+          </div>
+          <div className="relative flex justify-center">
+            <span className="bg-white px-3 text-xs text-slate-400">
+              Already have an account?
+            </span>
+          </div>
+        </div>
+
+        <Link to="/login">
+          <Button variant="outline" className="w-full" size="lg">
+            Sign in instead
+          </Button>
+        </Link>
       </form>
     </AuthLayout>
   )

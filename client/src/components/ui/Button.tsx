@@ -23,21 +23,22 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   ) => {
     const variants = {
       primary:
-        'bg-violet-600 text-white hover:bg-violet-700 active:bg-violet-800 shadow-sm',
+        'bg-gradient-to-r from-indigo-600 to-violet-600 text-white hover:from-indigo-700 hover:to-violet-700 shadow-md shadow-indigo-200 hover:shadow-lg hover:shadow-indigo-200 active:scale-[0.98]',
       secondary:
-        'bg-gray-100 text-gray-900 hover:bg-gray-200 active:bg-gray-300',
-      ghost: 'bg-transparent text-gray-700 hover:bg-gray-100',
+        'bg-slate-100 text-slate-800 hover:bg-slate-200 active:bg-slate-300',
+      ghost:
+        'bg-transparent text-slate-600 hover:bg-slate-100 hover:text-slate-800',
       destructive:
-        'bg-red-500 text-white hover:bg-red-600 active:bg-red-700 shadow-sm',
+        'bg-gradient-to-r from-red-500 to-rose-600 text-white hover:from-red-600 hover:to-rose-700 shadow-md shadow-red-200 active:scale-[0.98]',
       outline:
-        'border border-gray-200 bg-white text-gray-700 hover:bg-gray-50 active:bg-gray-100',
+        'border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 hover:border-slate-300 active:bg-slate-100',
     }
 
     const sizes = {
-      sm: 'px-3 py-1.5 text-xs rounded-md gap-1.5',
-      md: 'px-4 py-2.5 text-sm rounded-lg gap-2',
-      lg: 'px-6 py-3 text-base rounded-xl gap-2',
-      icon: 'p-2 rounded-lg',
+      sm: 'px-3.5 py-2 text-xs rounded-lg gap-1.5 h-8',
+      md: 'px-5 py-2.5 text-sm rounded-xl gap-2 h-10',
+      lg: 'px-6 py-3 text-sm rounded-xl gap-2 h-12',
+      icon: 'p-2.5 rounded-xl',
     }
 
     return (
@@ -45,17 +46,17 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         disabled={disabled ?? loading}
         className={cn(
-          'inline-flex items-center justify-center font-medium',
-          'focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-1',
-          'disabled:opacity-50 disabled:cursor-not-allowed',
-          'transition-all duration-150 cursor-pointer',
+          'inline-flex items-center justify-center font-semibold',
+          'focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2',
+          'disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none',
+          'transition-all duration-150 cursor-pointer select-none',
           variants[variant],
           sizes[size],
           className
         )}
         {...props}
       >
-        {loading && <Loader2 className="animate-spin" size={16} />}
+        {loading && <Loader2 className="animate-spin shrink-0" size={15} />}
         {children}
       </button>
     )
