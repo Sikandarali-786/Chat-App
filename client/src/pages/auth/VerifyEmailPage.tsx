@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { useSearchParams, Link } from 'react-router-dom'
 import { MailCheck, Loader2, XCircle, ArrowRight } from 'lucide-react'
 import { AuthLayout } from '@/layouts/AuthLayout'
@@ -8,10 +8,14 @@ import { useVerifyEmail } from '@/modules/auth/auth.hooks'
 export function VerifyEmailPage() {
   const [searchParams] = useSearchParams()
   const token = searchParams.get('token')
+  const verifyCalled = useRef(false)
   const { mutate: verify, isPending, isSuccess, isError } = useVerifyEmail()
 
   useEffect(() => {
-    if (token) verify(token)
+    if (token && !verifyCalled.current) {
+      verifyCalled.current = true
+      verify(token)
+    }
   }, [token, verify])
 
   return (

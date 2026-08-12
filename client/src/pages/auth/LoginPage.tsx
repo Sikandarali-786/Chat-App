@@ -55,6 +55,7 @@ export function LoginPage() {
             </Link>
           </div>
           <Input
+            id="password"
             type={showPassword ? 'text' : 'password'}
             placeholder="Enter your password"
             autoComplete="current-password"

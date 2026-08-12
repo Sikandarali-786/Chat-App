@@ -34,13 +34,10 @@ export const useRegister = () => {
 
 // ─── Verify Email ─────────────────────────────────────────────────────────────
 export const useVerifyEmail = () => {
-  const navigate = useNavigate()
-
   return useMutation({
     mutationFn: (token: string) => authApi.verifyEmail(token),
     onSuccess: (data) => {
       toast.success(data.message)
-      navigate('/login')
     },
     onError: (error: any) => {
       toast.error(error?.response?.data?.message ?? 'Verification failed')
@@ -58,7 +55,7 @@ export const useLogin = () => {
     onSuccess: (data) => {
       const { accessToken, refreshToken, user } = data.data
       setAuth(user, accessToken, refreshToken)
-      toast.success(`Welcome back, ${user.fullName}!`)
+      toast.success(`Welcome, ${user.fullName}!`)
       navigate('/chat')
     },
     onError: (error: any) => {

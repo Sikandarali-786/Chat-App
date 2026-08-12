@@ -82,7 +82,7 @@ class MessageRepository {
         return await Message.findByIdAndUpdate(
             messageId,
             { content, isEdited: true, editedAt: new Date() },
-            { new: true }
+            { returnDocument: "after" }
         );
     }
 
@@ -93,7 +93,7 @@ class MessageRepository {
                 status: "delivered",
                 $addToSet: { deliveredTo: new Types.ObjectId(userId) },
             },
-            { new: true }
+            { returnDocument: "after" }
         );
     }
 
@@ -104,7 +104,7 @@ class MessageRepository {
                 status: "seen",
                 $addToSet: { seenBy: new Types.ObjectId(userId) },
             },
-            { new: true }
+            { returnDocument: "after" }
         );
     }
 
@@ -112,7 +112,7 @@ class MessageRepository {
         return await Message.findByIdAndUpdate(
             messageId,
             { $addToSet: { starredBy: new Types.ObjectId(userId) } },
-            { new: true }
+            { returnDocument: "after" }
         );
     }
 
@@ -120,7 +120,7 @@ class MessageRepository {
         return await Message.findByIdAndUpdate(
             messageId,
             { $pull: { starredBy: new Types.ObjectId(userId) } },
-            { new: true }
+            { returnDocument: "after" }
         );
     }
 
@@ -138,7 +138,7 @@ class MessageRepository {
         return await Message.findByIdAndUpdate(
             messageId,
             { $addToSet: { deletedFor: new Types.ObjectId(userId) } },
-            { new: true }
+            { returnDocument: "after" }
         );
     }
 
@@ -146,7 +146,7 @@ class MessageRepository {
         return await Message.findByIdAndUpdate(
             messageId,
             { isDeleted: true },
-            { new: true }
+            { returnDocument: "after" }
         );
     }
 

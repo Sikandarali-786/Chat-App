@@ -66,7 +66,7 @@ class ConversationRepository {
                 lastMessage: new Types.ObjectId(messageId),
                 lastMessageAt: new Date(),
             },
-            { new: true }
+            { returnDocument: "after" }
         );
     }
 
@@ -74,7 +74,7 @@ class ConversationRepository {
         return await Conversation.findByIdAndUpdate(
             conversationId,
             { $addToSet: { pinnedBy: new Types.ObjectId(userId) } },
-            { new: true }
+            { returnDocument: "after" }
         );
     }
 
@@ -82,7 +82,7 @@ class ConversationRepository {
         return await Conversation.findByIdAndUpdate(
             conversationId,
             { $pull: { pinnedBy: new Types.ObjectId(userId) } },
-            { new: true }
+            { returnDocument: "after" }
         );
     }
 
@@ -112,7 +112,7 @@ class ConversationRepository {
                     },
                 },
             },
-            { new: true }
+            { returnDocument: "after" }
         ).populate("participants", "fullName username avatar status lastSeen");
     }
 
@@ -120,7 +120,7 @@ class ConversationRepository {
         return await Conversation.findByIdAndUpdate(
             conversationId,
             { $pull: { participants: new Types.ObjectId(memberId) } },
-            { new: true }
+            { returnDocument: "after" }
         ).populate("participants", "fullName username avatar status lastSeen");
     }
 
@@ -128,7 +128,7 @@ class ConversationRepository {
         return await Conversation.findByIdAndUpdate(
             conversationId,
             { name },
-            { new: true }
+            { returnDocument: "after" }
         );
     }
 
@@ -136,7 +136,7 @@ class ConversationRepository {
         return await Conversation.findByIdAndUpdate(
             conversationId,
             { avatar },
-            { new: true }
+            { returnDocument: "after" }
         );
     }
 
@@ -144,7 +144,7 @@ class ConversationRepository {
         return await Conversation.findByIdAndUpdate(
             conversationId,
             { admin: new Types.ObjectId(memberId) },
-            { new: true }
+            { returnDocument: "after" }
         );
     }
 }

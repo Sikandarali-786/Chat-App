@@ -38,8 +38,10 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             }}
             className={cn(
               // Base
-              'w-full rounded-xl border bg-white px-4 py-3 text-sm text-slate-900',
-              'placeholder:text-slate-400',
+              'w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900',
+              'placeholder:text-slate-400 appearance-none',
+              // Layout
+              'min-h-[3rem] leading-5',
               // Transitions
               'transition-all duration-200',
               // Focus
@@ -47,9 +49,11 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
               // Hover
               'hover:border-slate-300',
               // Disabled
-              'disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-slate-50',
+              'disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-slate-100',
               // Default border
-              !error ? 'border-slate-200' : 'border-red-300 bg-red-50/30 focus:ring-red-100 focus:border-red-400',
+              !error
+                ? 'border-slate-200 bg-white'
+                : 'border-red-300 bg-red-50/30 focus:ring-red-100 focus:border-red-400',
               className
             )}
             {...props}

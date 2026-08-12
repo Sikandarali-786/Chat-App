@@ -58,7 +58,7 @@ class CallRepository {
             update.endedAt = new Date();
         }
 
-        return await Call.findOneAndUpdate({ callId }, update, { new: true });
+        return await Call.findOneAndUpdate({ callId }, update, { returnDocument: "after" });
     }
 
     async updateDuration(callId: string) {
@@ -72,7 +72,7 @@ class CallRepository {
         return await Call.findOneAndUpdate(
             { callId },
             { duration, endedAt: new Date() },
-            { new: true }
+            { returnDocument: "after" }
         );
     }
 
@@ -84,7 +84,7 @@ class CallRepository {
             wasAudioMuted?: boolean;
         }
     ) {
-        return await Call.findOneAndUpdate({ callId }, features, { new: true });
+        return await Call.findOneAndUpdate({ callId }, features, { returnDocument: "after" });
     }
 }
 

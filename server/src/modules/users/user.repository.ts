@@ -55,7 +55,7 @@ class UserRepository {
         return await User.findByIdAndUpdate(
             userId,
             { refreshToken },
-            { new: true }
+            { returnDocument: "after" }
         );
     }
 
@@ -67,7 +67,7 @@ class UserRepository {
                 verificationToken: null,
                 verificationTokenExpiresAt: null,
             },
-            { new: true }
+            { returnDocument: "after" }
         );
     }
 
@@ -75,7 +75,7 @@ class UserRepository {
         return await User.findByIdAndUpdate(
             userId,
             { verificationToken: token, verificationTokenExpiresAt: expiresAt },
-            { new: true }
+            { returnDocument: "after" }
         );
     }
 
@@ -83,7 +83,7 @@ class UserRepository {
         return await User.findByIdAndUpdate(
             userId,
             { passwordResetToken: token, passwordResetExpiresAt: expiresAt },
-            { new: true }
+            { returnDocument: "after" }
         );
     }
 
@@ -95,14 +95,14 @@ class UserRepository {
                 passwordResetToken: null,
                 passwordResetExpiresAt: null,
             },
-            { new: true }
+            { returnDocument: "after" }
         );
     }
 
     // ─── Profile ───────────────────────────────────────────────────────────────
 
     async updateProfile(userId: string, data: Partial<IUser>) {
-        return await User.findByIdAndUpdate(userId, data, { new: true });
+        return await User.findByIdAndUpdate(userId, data, { returnDocument: "after" });
     }
 
     // ─── Status ────────────────────────────────────────────────────────────────
@@ -111,7 +111,7 @@ class UserRepository {
         return await User.findByIdAndUpdate(
             userId,
             { status, lastSeen: new Date() },
-            { new: true }
+            { returnDocument: "after" }
         );
     }
 
@@ -150,7 +150,7 @@ class UserRepository {
         return await User.findByIdAndUpdate(
             userId,
             { $addToSet: { blockedUsers: new Types.ObjectId(targetId) } },
-            { new: true }
+            { returnDocument: "after" }
         );
     }
 
@@ -158,7 +158,7 @@ class UserRepository {
         return await User.findByIdAndUpdate(
             userId,
             { $pull: { blockedUsers: new Types.ObjectId(targetId) } },
-            { new: true }
+            { returnDocument: "after" }
         );
     }
 
@@ -183,7 +183,7 @@ class UserRepository {
         return await User.findByIdAndUpdate(
             userId,
             { $addToSet: { mutedUsers: new Types.ObjectId(targetId) } },
-            { new: true }
+            { returnDocument: "after" }
         );
     }
 
@@ -191,7 +191,7 @@ class UserRepository {
         return await User.findByIdAndUpdate(
             userId,
             { $pull: { mutedUsers: new Types.ObjectId(targetId) } },
-            { new: true }
+            { returnDocument: "after" }
         );
     }
 
