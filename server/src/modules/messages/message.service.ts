@@ -65,6 +65,7 @@ class MessageService {
             content: data.content,
             type: data.type ?? "text",
             replyTo: (data.replyTo ?? null) as any,
+            mentions: (data.mentions ?? []) as any,
         });
 
         // Update conversation lastMessage

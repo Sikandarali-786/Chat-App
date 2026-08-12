@@ -12,6 +12,9 @@ export interface IMessage extends Document {
     type: MessageType;
     content: string; // Text or file URL
 
+    // Mentions
+    mentions: Types.ObjectId[];
+
     // Reply
     replyTo?: Types.ObjectId | null;
 
@@ -42,6 +45,7 @@ export interface SendMessageDTO {
     content: string;
     type?: MessageType;
     replyTo?: string;
+    mentions?: string[]; // Array of user IDs mentioned
 }
 
 export interface EditMessageDTO {

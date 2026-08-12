@@ -5,6 +5,7 @@ export const sendMessageSchema = z.object({
     content: z.string().trim().min(1, "Message content is required"),
     type: z.enum(["text", "image", "video", "audio", "file"]).default("text"),
     replyTo: z.string().optional(),
+    mentions: z.array(z.string()).optional(),
 });
 
 export const editMessageSchema = z.object({

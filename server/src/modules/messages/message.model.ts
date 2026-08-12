@@ -26,6 +26,12 @@ const messageSchema = new Schema<IMessage>(
             required: true,
         },
 
+        mentions: {
+            type: [Schema.Types.ObjectId],
+            ref: "User",
+            default: [],
+        },
+
         replyTo: {
             type: Schema.Types.ObjectId,
             ref: "Message",

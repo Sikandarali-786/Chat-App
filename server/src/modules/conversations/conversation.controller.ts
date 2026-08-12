@@ -11,14 +11,15 @@ export const createConversation = asyncHandler(
             req.user!.userId,
             req.body
         );
-        return successResponse(
-            res,
-            MESSAGES.CONVERSATION_CREATED,
-            conversation,
-            201
-        );
+        return successResponse(res, MESSAGES.CONVERSATION_CREATED, conversation, 201);
     }
 );
+
+// ─── Create Group ──────────────────────────────────────────────────────────────
+export const createGroup = asyncHandler(async (req: Request, res: Response) => {
+    const group = await conversationService.createGroup(req.user!.userId, req.body);
+    return successResponse(res, MESSAGES.GROUP_CREATED, group, 201);
+});
 
 // ─── Get Conversations ─────────────────────────────────────────────────────────
 export const getConversations = asyncHandler(
@@ -72,5 +73,68 @@ export const deleteConversation = asyncHandler(
             req.user!.userId
         );
         return successResponse(res, MESSAGES.CONVERSATION_DELETED);
+    }
+);
+
+// ─── Add Members ──────────────────────────────────────────────────────────────
+export const addMembers = asyncHandler(async (req: Request, res: Response) => {
+    const group = await conversationService.addMembers(
+        req.params["conversationId"] as string,
+        req.user!.userId,
+        req.body
+    );
+    return successResponse(res, MESSAGES.MEMBERS_ADDED, group);
+});
+
+// ─── Remove Member ─────────────────────────────────────────────────────────────
+export const removeMember = asyncHandler(async (req: Request, res: Response) => {
+    const group = await conversationService.removeMember(
+        req.params["conversationId"] as string,
+        req.user!.userId,
+        { memberId: req.params["memberId"] as string }
+    );
+    return successResponse(res, MESSAGES.MEMBER_REMOVED, group);
+});
+
+// ─── Leave Group ───────────────────────────────────────────────────────────────
+export const leaveGroup = asyncHandler(async (req: Request, res: Response) => {
+    await conversationService.leaveGroup(
+        req.params["conversationId"] as string,
+        req.user!.userId
+    );
+    return successResponse(res, MESSAGES.LEFT_GROUP);
+});
+
+// ─── Promote Admin ─────────────────────────────────────────────────────────────
+export const promoteAdmin = asyncHandler(async (req: Request, res: Response) => {
+    const group = await conversationService.promoteAdmin(
+        req.params["conversationId"] as string,
+        req.user!.userId,
+        req.body
+    );
+    return successResponse(res, MESSAGES.ADMIN_PROMOTED, group);
+});
+
+// ─── Update Group Name ─────────────────────────────────────────────────────────
+export const updateGroupName = asyncHandler(
+    async (req: Request, res: Response) => {
+        const group = await conversationService.updateGroupName(
+            req.params["conversationId"] as string,
+            req.user!.userId,
+            req.body
+        );
+        return successResponse(res, MESSAGES.GROUP_NAME_UPDATED, group);
+    }
+);
+
+// ─── Update Group Avatar ───────────────────────────────────────────────────────
+export const updateGroupAvatar = asyncHandler(
+    async (req: Request, res: Response) => {
+        const group = await conversationService.updateGroupAvatar(
+            req.params["conversationId"] as string,
+            req.user!.userId,
+            req.body
+        );
+        return successResponse(res, MESSAGES.GROUP_AVATAR_UPDATED, group);
     }
 );

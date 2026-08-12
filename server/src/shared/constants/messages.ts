@@ -44,6 +44,20 @@ export const MESSAGES = {
     NOT_CONVERSATION_PARTICIPANT: "You are not a participant in this conversation",
     CANNOT_MESSAGE_BLOCKED_USER: "Cannot send message to blocked user",
 
+    // Groups
+    GROUP_CREATED: "Group created successfully",
+    GROUP_NAME_UPDATED: "Group name updated successfully",
+    GROUP_AVATAR_UPDATED: "Group avatar updated successfully",
+    MEMBERS_ADDED: "Members added successfully",
+    MEMBER_REMOVED: "Member removed successfully",
+    LEFT_GROUP: "Left group successfully",
+    ADMIN_PROMOTED: "Admin promoted successfully",
+    NOT_GROUP_ADMIN: "Only group admin can perform this action",
+    CANNOT_REMOVE_ADMIN: "Cannot remove group admin",
+    MEMBER_NOT_IN_GROUP: "Member is not in this group",
+    ALREADY_GROUP_MEMBER: "User is already a member of this group",
+    MINIMUM_GROUP_MEMBERS: "Group must have at least 2 members",
+
     // Messages
     MESSAGE_SENT: "Message sent successfully",
     MESSAGES_FETCHED: "Messages fetched successfully",

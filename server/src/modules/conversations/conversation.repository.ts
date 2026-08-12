@@ -99,6 +99,54 @@ class ConversationRepository {
     async deleteById(id: string) {
         return await Conversation.findByIdAndDelete(id);
     }
+
+    // ─── Group Management ──────────────────────────────────────────────────────
+
+    async addMembers(conversationId: string, memberIds: string[]) {
+        return await Conversation.findByIdAndUpdate(
+            conversationId,
+            {
+                $addToSet: {
+                    participants: {
+                        $each: memberIds.map((id) => new Types.ObjectId(id)),
+                    },
+                },
+            },
+            { new: true }
+        ).populate("participants", "fullName username avatar status lastSeen");
+    }
+
+    async removeMember(conversationId: string, memberId: string) {
+        return await Conversation.findByIdAndUpdate(
+            conversationId,
+            { $pull: { participants: new Types.ObjectId(memberId) } },
+            { new: true }
+        ).populate("participants", "fullName username avatar status lastSeen");
+    }
+
+    async updateGroupName(conversationId: string, name: string) {
+        return await Conversation.findByIdAndUpdate(
+            conversationId,
+            { name },
+            { new: true }
+        );
+    }
+
+    async updateGroupAvatar(conversationId: string, avatar: string) {
+        return await Conversation.findByIdAndUpdate(
+            conversationId,
+            { avatar },
+            { new: true }
+        );
+    }
+
+    async promoteAdmin(conversationId: string, memberId: string) {
+        return await Conversation.findByIdAndUpdate(
+            conversationId,
+            { admin: new Types.ObjectId(memberId) },
+            { new: true }
+        );
+    }
 }
 
 export const conversationRepository = new ConversationRepository();

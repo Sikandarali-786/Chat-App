@@ -32,6 +32,32 @@ export interface CreateConversationDTO {
     participantId: string; // For one-to-one
 }
 
+export interface CreateGroupDTO {
+    name: string;
+    participantIds: string[]; // Members (excluding creator)
+    avatar?: string;
+}
+
+export interface AddMembersDTO {
+    memberIds: string[];
+}
+
+export interface RemoveMemberDTO {
+    memberId: string;
+}
+
+export interface PromoteAdminDTO {
+    memberId: string;
+}
+
+export interface UpdateGroupNameDTO {
+    name: string;
+}
+
+export interface UpdateGroupAvatarDTO {
+    avatar: string;
+}
+
 export interface GetConversationsQuery {
     page?: number;
     limit?: number;
