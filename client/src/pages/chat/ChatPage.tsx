@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { ArrowRight, MessageCircle, Search, Send } from 'lucide-react'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
@@ -16,8 +17,10 @@ import type { Conversation, Message } from '@/types/chat'
 import type { User } from '@/types'
 
 export function ChatPage() {
+  const navigate = useNavigate()
   const queryClient = useQueryClient()
   const currentUser = useAuthStore((state) => state.user)
+  const logout = useAuthStore((state) => state.logout)
   const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
   const [searchResults, setSearchResults] = useState<User[]>([])
@@ -140,6 +143,13 @@ export function ChatPage() {
     }
   }
 
+  const handleLogout = () => {
+    logout()
+    disconnectSocket()
+    queryClient.clear()
+    window.location.replace('/login')
+  }
+
   return (
     <div className="min-h-screen bg-slate-100 text-slate-900">
       <div className="mx-auto flex h-full max-w-360 gap-6 px-4 py-6 lg:px-8">
@@ -246,8 +256,13 @@ export function ChatPage() {
                     {selectedConversation ? getConversationTitle(selectedConversation) : 'Select a conversation'}
                   </h3>
                 </div>
-                <div className="rounded-3xl bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm shadow-slate-100">
-                  {selectedConversation ? selectedConversation.participants.length : 0} participants
+                <div className="flex flex-wrap items-center gap-3">
+                  <div className="rounded-3xl bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm shadow-slate-100">
+                    {selectedConversation ? selectedConversation.participants.length : 0} participants
+                  </div>
+                  <Button variant="outline" size="sm" onClick={handleLogout}>
+                    Logout
+                  </Button>
                 </div>
               </div>
             </div>
