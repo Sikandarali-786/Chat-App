@@ -8,8 +8,13 @@ import {
     EditMessageDTO,
     ForwardMessageDTO,
     GetMessagesQuery,
+    SendLocationDTO,
 } from "./message.types";
 import { emitToUser } from "../../socket/socket";
+import {
+    uploadToCloudinary,
+    getResourceType,
+} from "../../shared/config/cloudinary";
 
 class MessageService {
     // ─── Send Message ──────────────────────────────────────────────────────────
@@ -59,14 +64,21 @@ class MessageService {
         }
 
         // Create message
-        const message = await messageRepository.create({
-            conversationId: data.conversationId as any,
-            senderId: userId as any,
+        const messageData: any = {
+            conversationId: data.conversationId,
+            senderId: userId,
             content: data.content,
             type: data.type ?? "text",
-            replyTo: (data.replyTo ?? null) as any,
-            mentions: (data.mentions ?? []) as any,
-        });
+            replyTo: data.replyTo ?? null,
+            mentions: data.mentions ?? [],
+        };
+
+        if (data.fileName) messageData.fileName = data.fileName;
+        if (data.fileSize) messageData.fileSize = data.fileSize;
+        if (data.mimeType) messageData.mimeType = data.mimeType;
+        if (data.duration) messageData.duration = data.duration;
+
+        const message = await messageRepository.create(messageData);
 
         // Update conversation lastMessage
         await conversationRepository.updateLastMessage(
@@ -309,6 +321,76 @@ class MessageService {
                     userId,
                 });
             }
+        });
+    }
+
+    // ─── Send Media Message ────────────────────────────────────────────────────
+    async sendMediaMessage(
+        userId: string,
+        conversationId: string,
+        file: Express.Multer.File,
+        replyTo?: string
+    ) {
+        // Validate conversation
+        const conversation = await conversationRepository.findById(conversationId);
+        if (!conversation) {
+            throw new AppError(MESSAGES.CONVERSATION_NOT_FOUND, 404);
+        }
+
+        // Check participant
+        const isParticipant = conversation.participants.some(
+            (p: any) => p._id.toString() === userId
+        );
+        if (!isParticipant) {
+            throw new AppError(MESSAGES.NOT_CONVERSATION_PARTICIPANT, 403);
+        }
+
+        // Determine message type from mime type
+        let messageType: "image" | "video" | "audio" | "file" | "gif" = "file";
+        if (file.mimetype.startsWith("image/")) {
+            messageType = file.mimetype === "image/gif" ? "gif" : "image";
+        } else if (file.mimetype.startsWith("video/")) {
+            messageType = "video";
+        } else if (file.mimetype.startsWith("audio/")) {
+            messageType = "audio";
+        }
+
+        // Upload to Cloudinary
+        const resourceType = getResourceType(file.mimetype);
+        const uploadResult = await uploadToCloudinary(
+            file.path,
+            `chat-app/media`,
+            resourceType
+        );
+
+        // Send message with file URL
+        const messageData: SendMessageDTO = {
+            conversationId,
+            content: uploadResult.url,
+            type: messageType,
+            fileName: file.originalname,
+            fileSize: file.size,
+            mimeType: file.mimetype,
+        };
+
+        if (replyTo) messageData.replyTo = replyTo;
+        if (uploadResult.duration) messageData.duration = uploadResult.duration;
+
+        return await this.sendMessage(userId, messageData);
+    }
+
+    // ─── Send Location ─────────────────────────────────────────────────────────
+    async sendLocation(userId: string, data: SendLocationDTO) {
+        const locationData = {
+            latitude: data.latitude,
+            longitude: data.longitude,
+            address: data.address,
+        };
+
+        return await this.sendMessage(userId, {
+            conversationId: data.conversationId,
+            content: JSON.stringify(locationData),
+            type: "location",
         });
     }
 }

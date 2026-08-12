@@ -1,6 +1,6 @@
 import { Document, Types } from "mongoose";
 
-export type MessageType = "text" | "image" | "video" | "audio" | "file";
+export type MessageType = "text" | "image" | "video" | "audio" | "file" | "location" | "gif";
 export type MessageStatus = "sent" | "delivered" | "seen";
 
 export interface IMessage extends Document {
@@ -10,7 +10,16 @@ export interface IMessage extends Document {
     senderId: Types.ObjectId;
 
     type: MessageType;
-    content: string; // Text or file URL
+    content: string; // Text, file URL, or location data (JSON string)
+
+    // File metadata
+    fileName?: string;
+    fileSize?: number;
+    mimeType?: string;
+    duration?: number; // For audio/video in seconds
+
+    // Location data (stored as JSON in content)
+    // { latitude: number, longitude: number, address?: string }
 
     // Mentions
     mentions: Types.ObjectId[];
@@ -46,6 +55,17 @@ export interface SendMessageDTO {
     type?: MessageType;
     replyTo?: string;
     mentions?: string[]; // Array of user IDs mentioned
+    fileName?: string;
+    fileSize?: number;
+    mimeType?: string;
+    duration?: number;
+}
+
+export interface SendLocationDTO {
+    conversationId: string;
+    latitude: number;
+    longitude: number;
+    address?: string;
 }
 
 export interface EditMessageDTO {

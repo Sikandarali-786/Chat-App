@@ -2,11 +2,39 @@ import { Request, Response } from "express";
 import { asyncHandler } from "../../shared/middlewares/asyncHandler";
 import { successResponse } from "../../shared/responses/success.response";
 import { MESSAGES } from "../../shared/constants";
+import { AppError } from "../../shared/errors/AppError";
 import { messageService } from "./message.service";
 
 // ─── Send Message ──────────────────────────────────────────────────────────────
 export const sendMessage = asyncHandler(async (req: Request, res: Response) => {
     const message = await messageService.sendMessage(req.user!.userId, req.body);
+    return successResponse(res, MESSAGES.MESSAGE_SENT, message, 201);
+});
+
+// ─── Send Media ────────────────────────────────────────────────────────────────
+export const sendMedia = asyncHandler(async (req: Request, res: Response) => {
+    if (!req.file) {
+        throw new AppError(MESSAGES.NO_FILE_UPLOADED, 400);
+    }
+
+    const { conversationId, replyTo } = req.body as {
+        conversationId: string;
+        replyTo?: string;
+    };
+
+    const message = await messageService.sendMediaMessage(
+        req.user!.userId,
+        conversationId,
+        req.file,
+        replyTo
+    );
+
+    return successResponse(res, MESSAGES.MESSAGE_SENT, message, 201);
+});
+
+// ─── Send Location ─────────────────────────────────────────────────────────────
+export const sendLocation = asyncHandler(async (req: Request, res: Response) => {
+    const message = await messageService.sendLocation(req.user!.userId, req.body);
     return successResponse(res, MESSAGES.MESSAGE_SENT, message, 201);
 });
 

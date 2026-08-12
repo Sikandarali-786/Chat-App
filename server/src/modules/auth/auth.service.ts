@@ -259,7 +259,7 @@ class AuthService {
         const avatarUrl = await uploadToCloudinary(filePath, "chat-app/avatars");
 
         const updated = await userRepository.updateProfile(userId, {
-            avatar: avatarUrl,
+            avatar: avatarUrl.url,
         });
 
         if (!updated) {

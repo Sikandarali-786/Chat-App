@@ -1,14 +1,18 @@
 import { Router } from "express";
 import { protect } from "../../shared/middlewares/auth.middleware";
 import { validate } from "../../shared/validators";
+import { mediaUpload } from "../../shared/utils/multer";
 import {
     sendMessageSchema,
     editMessageSchema,
     forwardMessageSchema,
+    sendLocationSchema,
 } from "./message.validation";
 
 import {
     sendMessage,
+    sendMedia,
+    sendLocation,
     getMessages,
     editMessage,
     deleteMessage,
@@ -22,10 +26,12 @@ import {
 
 const router = Router();
 
-// All routes are protected
+// All routes protected
 router.use(protect);
 
 router.post("/", validate(sendMessageSchema), sendMessage);
+router.post("/media", mediaUpload.single("file"), sendMedia);
+router.post("/location", validate(sendLocationSchema), sendLocation);
 router.get("/starred", getStarredMessages);
 router.get("/conversation/:conversationId", getMessages);
 router.patch("/:messageId", validate(editMessageSchema), editMessage);

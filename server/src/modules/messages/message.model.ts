@@ -17,13 +17,33 @@ const messageSchema = new Schema<IMessage>(
 
         type: {
             type: String,
-            enum: ["text", "image", "video", "audio", "file"],
+            enum: ["text", "image", "video", "audio", "file", "location", "gif"],
             default: "text",
         },
 
         content: {
             type: String,
             required: true,
+        },
+
+        fileName: {
+            type: String,
+            default: null,
+        },
+
+        fileSize: {
+            type: Number,
+            default: null,
+        },
+
+        mimeType: {
+            type: String,
+            default: null,
+        },
+
+        duration: {
+            type: Number,
+            default: null,
         },
 
         mentions: {

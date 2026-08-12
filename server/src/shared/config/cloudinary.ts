@@ -11,18 +11,26 @@ export { cloudinary };
 
 export const uploadToCloudinary = async (
     filePath: string,
-    folder: string
-): Promise<string> => {
+    folder: string,
+    resourceType: "image" | "video" | "raw" | "auto" = "auto"
+): Promise<{ url: string; publicId: string; duration?: number }> => {
     const result = await cloudinary.uploader.upload(filePath, {
         folder,
-        resource_type: "image",
+        resource_type: resourceType,
     });
 
-    return result.secure_url;
+    return {
+        url: result.secure_url,
+        publicId: result.public_id,
+        duration: result.duration, // For video/audio
+    };
 };
 
-export const deleteFromCloudinary = async (publicId: string): Promise<void> => {
-    await cloudinary.uploader.destroy(publicId);
+export const deleteFromCloudinary = async (
+    publicId: string,
+    resourceType: "image" | "video" | "raw" = "image"
+): Promise<void> => {
+    await cloudinary.uploader.destroy(publicId, { resource_type: resourceType });
 };
 
 export const extractPublicId = (url: string): string => {
@@ -32,4 +40,12 @@ export const extractPublicId = (url: string): string => {
     const uploadIndex = parts.indexOf("upload");
     const pathAfterUpload = parts.slice(uploadIndex + 2).join("/"); // skip version segment
     return pathAfterUpload.replace(/\.[^/.]+$/, ""); // remove extension
+};
+
+export const getResourceType = (
+    mimeType: string
+): "image" | "video" | "raw" => {
+    if (mimeType.startsWith("image/")) return "image";
+    if (mimeType.startsWith("video/")) return "video";
+    return "raw"; // For audio, documents, etc.
 };
