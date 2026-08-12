@@ -79,6 +79,37 @@ export const initSocket = (httpServer: HttpServer): SocketServer => {
             }
         );
 
+        // ─── Message Status ─────────────────────────────────────────────────────
+
+        socket.on(
+            "message:delivered",
+            async (data: { conversationId: string }) => {
+                const { messageRepository } = await import(
+                    "../modules/messages/message.repository.js"
+                );
+                await messageRepository.markConversationMessagesAsDelivered(
+                    data.conversationId,
+                    userId
+                );
+            }
+        );
+
+        socket.on("message:seen", async (data: { conversationId: string }) => {
+            const { messageRepository } = await import(
+                "../modules/messages/message.repository.js"
+            );
+            await messageRepository.markConversationMessagesAsSeen(
+                data.conversationId,
+                userId
+            );
+
+            // Broadcast to conversation participants
+            socket.to(data.conversationId).emit("message:seen", {
+                conversationId: data.conversationId,
+                userId,
+            });
+        });
+
         // ─── Get Online Users ───────────────────────────────────────────────────
 
         socket.on("users:online", () => {

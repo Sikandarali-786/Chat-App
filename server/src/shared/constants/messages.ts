@@ -32,6 +32,32 @@ export const MESSAGES = {
     USER_ALREADY_MUTED: "User is already muted",
     USER_NOT_MUTED: "User is not muted",
 
+    // Conversations
+    CONVERSATION_CREATED: "Conversation created successfully",
+    CONVERSATIONS_FETCHED: "Conversations fetched successfully",
+    CONVERSATION_FETCHED: "Conversation fetched successfully",
+    CONVERSATION_PINNED: "Conversation pinned successfully",
+    CONVERSATION_UNPINNED: "Conversation unpinned successfully",
+    CONVERSATION_DELETED: "Conversation deleted successfully",
+    CONVERSATION_NOT_FOUND: "Conversation not found",
+    CONVERSATION_ALREADY_EXISTS: "Conversation already exists",
+    NOT_CONVERSATION_PARTICIPANT: "You are not a participant in this conversation",
+    CANNOT_MESSAGE_BLOCKED_USER: "Cannot send message to blocked user",
+
+    // Messages
+    MESSAGE_SENT: "Message sent successfully",
+    MESSAGES_FETCHED: "Messages fetched successfully",
+    MESSAGE_EDITED: "Message edited successfully",
+    MESSAGE_DELETED: "Message deleted successfully",
+    MESSAGE_STARRED: "Message starred successfully",
+    MESSAGE_UNSTARRED: "Message unstarred successfully",
+    MESSAGE_FORWARDED: "Message forwarded successfully",
+    STARRED_MESSAGES_FETCHED: "Starred messages fetched successfully",
+    MESSAGE_NOT_FOUND: "Message not found",
+    CANNOT_EDIT_MESSAGE: "You can only edit your own messages",
+    CANNOT_DELETE_MESSAGE: "You can only delete your own messages",
+    MESSAGE_TOO_OLD_TO_EDIT: "Cannot edit messages older than 15 minutes",
+
     // Errors
     EMAIL_ALREADY_EXISTS: "Email already exists",
     USERNAME_ALREADY_EXISTS: "Username already exists",
