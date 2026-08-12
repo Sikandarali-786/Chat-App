@@ -5,6 +5,7 @@ import { userRoutes } from "../modules/users";
 import { conversationRoutes } from "../modules/conversations";
 import { messageRoutes } from "../modules/messages";
 import { notificationRoutes } from "../modules/notifications";
+import { callRoutes } from "../modules/calls";
 
 const router = Router();
 
@@ -14,5 +15,6 @@ router.use("/users", userRoutes);
 router.use("/conversations", conversationRoutes);
 router.use("/messages", messageRoutes);
 router.use("/notifications", notificationRoutes);
+router.use("/calls", callRoutes);
 
 export default router;

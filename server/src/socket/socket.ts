@@ -220,6 +220,149 @@ export const initSocket = (httpServer: HttpServer): SocketServer => {
             }
         );
 
+        // ─── Call State — DB persistence ────────────────────────────────────────
+
+        // Caller initiated → create DB record
+        socket.on(
+            "call:initiated",
+            async (data: {
+                callId: string;
+                receiverId: string;
+                conversationId: string;
+                type: "audio" | "video";
+            }) => {
+                const { callRepository } = await import(
+                    "../modules/calls/call.repository.js"
+                );
+                await callRepository.create({
+                    callId: data.callId,
+                    type: data.type,
+                    status: "initiated",
+                    callerId: userId as any,
+                    receiverId: data.receiverId as any,
+                    conversationId: data.conversationId as any,
+                });
+            }
+        );
+
+        // Receiver accepted → mark ongoing + set startedAt
+        socket.on("call:accepted_db", async (data: { callId: string }) => {
+            const { callRepository } = await import(
+                "../modules/calls/call.repository.js"
+            );
+            await callRepository.updateStatus(data.callId, "ongoing");
+        });
+
+        // Either party ended → calculate duration or mark missed/rejected
+        socket.on(
+            "call:ended_db",
+            async (data: { callId: string; status?: "ended" | "missed" | "rejected" }) => {
+                const { callRepository } = await import(
+                    "../modules/calls/call.repository.js"
+                );
+                const call = await callRepository.findByCallId(data.callId);
+                if (!call) return;
+
+                if (call.status === "ongoing") {
+                    await callRepository.updateDuration(data.callId);
+                } else {
+                    await callRepository.updateStatus(
+                        data.callId,
+                        data.status ?? "missed"
+                    );
+                }
+            }
+        );
+
+        // ─── Screen Share ───────────────────────────────────────────────────────
+
+        socket.on(
+            "call:screen-share:start",
+            async (data: { callId: string; receiverId: string }) => {
+                // Notify the other participant
+                emitToUser(data.receiverId, "call:screen-share:started", {
+                    callId: data.callId,
+                    userId,
+                });
+
+                // Persist to DB
+                const { callRepository } = await import(
+                    "../modules/calls/call.repository.js"
+                );
+                await callRepository.updateFeatures(data.callId, {
+                    wasScreenShared: true,
+                });
+            }
+        );
+
+        socket.on(
+            "call:screen-share:stop",
+            (data: { callId: string; receiverId: string }) => {
+                emitToUser(data.receiverId, "call:screen-share:stopped", {
+                    callId: data.callId,
+                    userId,
+                });
+            }
+        );
+
+        // ─── Mute / Unmute ──────────────────────────────────────────────────────
+
+        socket.on(
+            "call:mute",
+            async (data: { callId: string; receiverId: string }) => {
+                emitToUser(data.receiverId, "call:muted", {
+                    callId: data.callId,
+                    userId,
+                });
+
+                const { callRepository } = await import(
+                    "../modules/calls/call.repository.js"
+                );
+                await callRepository.updateFeatures(data.callId, {
+                    wasAudioMuted: true,
+                });
+            }
+        );
+
+        socket.on(
+            "call:unmute",
+            (data: { callId: string; receiverId: string }) => {
+                emitToUser(data.receiverId, "call:unmuted", {
+                    callId: data.callId,
+                    userId,
+                });
+            }
+        );
+
+        // ─── Camera On / Off ────────────────────────────────────────────────────
+
+        socket.on(
+            "call:camera:on",
+            async (data: { callId: string; receiverId: string }) => {
+                emitToUser(data.receiverId, "call:camera:on", {
+                    callId: data.callId,
+                    userId,
+                });
+
+                const { callRepository } = await import(
+                    "../modules/calls/call.repository.js"
+                );
+                await callRepository.updateFeatures(data.callId, {
+                    wasVideoEnabled: true,
+                });
+            }
+        );
+
+        socket.on(
+            "call:camera:off",
+            (data: { callId: string; receiverId: string }) => {
+                emitToUser(data.receiverId, "call:camera:off", {
+                    callId: data.callId,
+                    userId,
+                });
+            }
+        );
+
         // ─── Disconnect ─────────────────────────────────────────────────────────
 
         socket.on("disconnect", async () => {
