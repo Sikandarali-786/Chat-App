@@ -30,7 +30,7 @@ export function ConversationSidebar() {
     }
   }, [data, setConversations])
 
-  const filteredConversations = conversations.filter((conv) => {
+  const filteredConversations = (conversations || []).filter((conv) => {
     if (!searchQuery) return true
     const query = searchQuery.toLowerCase()
     
