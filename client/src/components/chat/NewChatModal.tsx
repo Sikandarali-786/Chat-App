@@ -30,6 +30,8 @@ export function NewChatModal({ onClose }: NewChatModalProps) {
     },
   })
 
+  const users = data?.data || []
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4">
@@ -69,13 +71,13 @@ export function NewChatModal({ onClose }: NewChatModalProps) {
             </p>
           )}
 
-          {query && !isLoading && data?.data.length === 0 && (
+          {query && !isLoading && users.length === 0 && (
             <p className="text-center text-sm text-slate-400 py-8">
               No users found
             </p>
           )}
 
-          {data?.data.map((user: any) => (
+          {users.length > 0 && users.map((user: any) => (
             <div
               key={user._id}
               className="flex items-center gap-3 p-3 hover:bg-slate-50 rounded-xl cursor-pointer transition-colors"
