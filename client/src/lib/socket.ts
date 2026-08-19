@@ -1,44 +1,37 @@
-import { io, type Socket } from 'socket.io-client'
+import { io, Socket } from 'socket.io-client'
 
 let socket: Socket | null = null
 
-const getServerUrl = () => {
-  if (import.meta.env.DEV) {
-    return 'http://localhost:5000'
-  }
-  return window.location.origin
-}
+export const initSocket = (token: string) => {
+  if (socket?.connected) return socket
 
-export const connectSocket = (token: string) => {
-  if (socket && socket.connected) {
-    return socket
-  }
-
-  socket = io(getServerUrl(), {
+  socket = io('http://localhost:5000', {
     auth: { token },
-    transports: ['websocket'],
-    withCredentials: true,
+    autoConnect: true,
+  })
+
+  socket.on('connect', () => {
+    console.log('✅ Socket connected:', socket?.id)
+  })
+
+  socket.on('disconnect', () => {
+    console.log('❌ Socket disconnected')
+  })
+
+  socket.on('connect_error', (error) => {
+    console.error('Socket connection error:', error.message)
   })
 
   return socket
 }
 
 export const disconnectSocket = () => {
-  if (!socket) return
-  socket.disconnect()
-  socket = null
-}
-
-export const onSocketEvent = <T>(event: string, callback: (data: T) => void) => {
-  if (!socket) return () => {}
-  socket.on(event, callback)
-  return () => {
-    socket.off(event, callback)
+  if (socket) {
+    socket.disconnect()
+    socket = null
   }
 }
 
-export const emitSocketEvent = (event: string, payload: unknown) => {
-  socket?.emit(event, payload)
-}
-
 export const getSocket = () => socket
+
+export default socket

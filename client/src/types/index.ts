@@ -44,9 +44,56 @@ export interface VerifyEmailPayload {
   token: string
 }
 
+// ─── Conversation ─────────────────────────────────────────────────────────────
+export interface Conversation {
+  _id: string
+  type: 'one-to-one' | 'group'
+  participants: User[]
+  lastMessage?: Message
+  name?: string
+  avatar?: string
+  groupAdmin?: string
+  isPinned?: boolean
+  createdAt: string
+  updatedAt: string
+}
+
+// ─── Message ──────────────────────────────────────────────────────────────────
+export interface Message {
+  _id: string
+  conversationId: string
+  senderId: User
+  content: string
+  type: 'text' | 'image' | 'video' | 'audio' | 'file' | 'location' | 'gif'
+  replyTo?: Message
+  mentions?: string[]
+  fileName?: string
+  fileSize?: number
+  mimeType?: string
+  duration?: number
+  isEdited: boolean
+  isDeleted: boolean
+  deletedBy: string[]
+  deliveredTo: string[]
+  seenBy: string[]
+  starredBy: string[]
+  createdAt: string
+  updatedAt: string
+}
+
 // ─── API Response ─────────────────────────────────────────────────────────────
 export interface ApiResponse<T = unknown> {
   success: boolean
   message: string
   data: T
+}
+
+export interface PaginatedResponse<T> {
+  data: T[]
+  pagination: {
+    total: number
+    page: number
+    limit: number
+    totalPages: number
+  }
 }
